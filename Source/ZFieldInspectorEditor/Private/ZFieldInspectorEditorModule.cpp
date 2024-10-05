@@ -4,7 +4,7 @@
 
 #include "WorkspaceMenuStructure.h"
 #include "WorkspaceMenuStructureModule.h"
-#include "Framework/Docking/WorkspaceItem.h"
+#include "View/SZFieldInspector.h"
 
 #define LOCTEXT_NAMESPACE "ZFieldInspectorEditorModule"
 
@@ -21,7 +21,7 @@ class FZFieldInspectorEditorModule : public IZFieldInspectorEditorModule
 	virtual void ShutdownModule() override;
 	// End IModuleInterface
 
-	TSharedRef<SDockTab> SpawnTab(const FSpawnTabArgs& SpawnTabArgs);
+	TSharedRef<SDockTab> SpawnTab(const FSpawnTabArgs& SpawnTabArgs, bool reversed);
 
 	TSharedPtr<FWorkspaceItem> FieldInspectorsGroup;
 };
@@ -36,14 +36,14 @@ void FZFieldInspectorEditorModule::StartupModule()
 	FieldInspectorsGroup = debugCategory->AddGroup(LOCTEXT("GroupName", "Field Inspectors"), icon);
 	
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
-		ZFieldInspector::ZFieldInspectorEditorModule_Private::TabId1, FOnSpawnTab::CreateRaw(this, &FZFieldInspectorEditorModule::SpawnTab))
+		ZFieldInspector::ZFieldInspectorEditorModule_Private::TabId1, FOnSpawnTab::CreateRaw(this, &FZFieldInspectorEditorModule::SpawnTab, false))
 		.SetDisplayName(LOCTEXT("TabTitle1", "Field Inspector 1"))
 		.SetTooltipText(LOCTEXT("TooltipText1", "Open the field inspector tab."))
 		.SetIcon(icon)
 		.SetGroup(FieldInspectorsGroup.ToSharedRef());
 		
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
-		ZFieldInspector::ZFieldInspectorEditorModule_Private::TabId2, FOnSpawnTab::CreateRaw(this, &FZFieldInspectorEditorModule::SpawnTab))
+		ZFieldInspector::ZFieldInspectorEditorModule_Private::TabId2, FOnSpawnTab::CreateRaw(this, &FZFieldInspectorEditorModule::SpawnTab, true))
 		.SetDisplayName(LOCTEXT("TabTitle2", "Field Inspector 2"))
 		.SetTooltipText(LOCTEXT("TooltipText2", "Open a second field inspector tab."))
 		.SetIcon(icon)
@@ -59,18 +59,13 @@ void FZFieldInspectorEditorModule::ShutdownModule()
 	debugCategory->RemoveItem(FieldInspectorsGroup.ToSharedRef());
 }
 
-TSharedRef<SDockTab> FZFieldInspectorEditorModule::SpawnTab(const FSpawnTabArgs& SpawnTabArgs)
+TSharedRef<SDockTab> FZFieldInspectorEditorModule::SpawnTab(const FSpawnTabArgs& SpawnTabArgs, bool reversed)
 {
 	return
 		SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
 		[
-			SNew(SBorder)
-			.Padding(2)
-			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-			[
-				SNew(STextBlock).Text(LOCTEXT("Test", "I'm field inspector!"))
-			]
+			SNew(ZFieldInspector::SZFieldInspector, reversed)
 		];
 }
 

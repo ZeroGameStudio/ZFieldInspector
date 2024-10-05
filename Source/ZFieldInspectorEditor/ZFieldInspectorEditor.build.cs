@@ -27,9 +27,6 @@ public class ZFieldInspectorEditor : ModuleRules
 			new string[]
 			{
 				"Core",
-				
-				"SlateCore",
-				"Slate",
 			}
 		);
 		
@@ -39,6 +36,10 @@ public class ZFieldInspectorEditor : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
+				
+				"InputCore",
+				"SlateCore",
+				"Slate",
 				
 				"WorkspaceMenuStructure",
 			}
