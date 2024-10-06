@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "ZFieldInspector",
+	"FriendlyName": "Field Inspector",
 	"Description": "An editor tool visualizes UField/FField objects for low level debugging.",
 	"Category": "Editor",
 	"CreatedBy": "Zero Games",
