@@ -104,8 +104,6 @@ namespace ZFieldInspector::ZFieldInspector_Private
 					SNew(SHorizontalBox)
 					
 					+ SHorizontalBox::Slot()
-					.VAlign(VAlign_Fill)
-					.HAlign(HAlign_Fill)
 					[
 						SAssignNew(PathText, SEditableTextBox)
 						.HintText(LOCTEXT("PathQueryHint", "Query field by object path (Only supports UField)"))
@@ -113,7 +111,6 @@ namespace ZFieldInspector::ZFieldInspector_Private
 
 					+ SHorizontalBox::Slot()
 					.AutoWidth()
-					.VAlign(VAlign_Fill)
 					.HAlign(HAlign_Right)
 					[
 						SNew(SButton)

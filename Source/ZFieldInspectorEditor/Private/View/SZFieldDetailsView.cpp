@@ -3,6 +3,8 @@
 
 #include "SZFieldDetailsView.h"
 
+#include "Components/SRichSeparator.h"
+
 namespace ZFieldInspector::ZFieldDetailsView_Private
 {
 	class SZFieldDetailsViewImpl : public SZFieldDetailsView
@@ -21,6 +23,7 @@ namespace ZFieldInspector::ZFieldDetailsView_Private
 	
 	private:
 		TSharedPtr<SVerticalBox> Box;
+		FSlateBrush SeparatorBrush;
 
 	};
 
@@ -41,8 +44,22 @@ namespace ZFieldInspector::ZFieldDetailsView_Private
 		}
 		
 		Box->AddSlot()
+		.AutoHeight()
 		[
 			Visit([this](auto& value){ return RefreshView(value); }, target)
+		];
+
+		Box->AddSlot()
+		.AutoHeight()
+		[
+			SNew(SRichSeparator)
+			.SeparatorImage(&SeparatorBrush)
+			.ColorAndOpacity(FLinearColor { 0.75f, 0.75f, 0.75f })
+			.Thickness(1.f)
+			[
+				SNew(STextBlock)
+				.Text(NSLOCTEXT("Test", "Test", "I AM SEPARATOR"))
+			]
 		];
 	}
 	
