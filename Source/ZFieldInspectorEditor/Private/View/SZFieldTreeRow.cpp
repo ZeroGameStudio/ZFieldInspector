@@ -28,56 +28,19 @@ namespace ZFieldInspector::ZFieldTreeRow_Private
 		FString type;
 		FString name;
 		TArray<FString> attrs;
-		FColor color;
+		FColor color = FColor::White;
 		if (target.IsType<UPackage*>())
 		{
 			const auto package = target.Get<UPackage*>();
 			
 			type = "Package";
 			package->GetName().Split("/", nullptr, &name, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
-			color = FColor::White;
 		}
 		else if (target.IsType<UField*>())
 		{
 			const auto field = target.Get<UField*>();
 
-			if (const auto cls = Cast<UClass>(field))
-			{
-				type = "Class";
-				
-				if (cls->HasAllClassFlags(CLASS_Interface))
-				{
-					attrs.Emplace("Interface");
-				}
-				else if (cls->HasAllClassFlags(CLASS_Abstract))
-				{
-					attrs.Emplace("Abstract");
-				}
-				
-				color = FColor::Orange;
-
-				if (cls->HasAllClassFlags(CLASS_Deprecated))
-				{
-					deprecated = true;
-				}
-			}
-			else if (const auto strct = Cast<UScriptStruct>(field))
-			{
-				type = "Struct";
-				color = FColor::Turquoise;
-			}
-			else if (const auto enm = Cast<UEnum>(field))
-			{
-				type = "Enum";
-				
-				if (enm->HasAnyEnumFlags(EEnumFlags::Flags))
-				{
-					attrs.Emplace("Flags");
-				}
-				
-				color = FColor::Emerald;
-			}
-			else if (const auto function = Cast<UFunction>(field))
+			if (const auto function = Cast<UFunction>(field))
 			{
 				if (const auto delegate = Cast<UDelegateFunction>(function))
 				{
@@ -92,7 +55,7 @@ namespace ZFieldInspector::ZFieldTreeRow_Private
 						attrs.Emplace("Sparse");
 					}
 
-					color = FColor { 255, 149, 230 };
+					color = { 237, 148, 192 };
 				}
 				else
 				{
@@ -111,7 +74,7 @@ namespace ZFieldInspector::ZFieldTreeRow_Private
 						attrs.Emplace("RPC");
 					}
 
-					color = FColor::Purple;
+					color = { 57, 204, 155 };
 				}
 
 				if (const UClass* outer = function->GetOwnerClass())
@@ -121,6 +84,39 @@ namespace ZFieldInspector::ZFieldTreeRow_Private
 						deprecated = true;
 					}
 				}
+			}
+			else if (const auto cls = Cast<UClass>(field))
+			{
+				const bool interface = cls->HasAllClassFlags(CLASS_Interface);
+				type = interface ? "Interface" : "Class";
+				
+				if (!interface && cls->HasAllClassFlags(CLASS_Abstract))
+				{
+					attrs.Emplace("Abstract");
+				}
+				
+				color = interface ? FColor { 187, 111, 255 } : FColor { 193, 145, 255 };
+
+				if (cls->HasAllClassFlags(CLASS_Deprecated))
+				{
+					deprecated = true;
+				}
+			}
+			else if (const auto strct = Cast<UScriptStruct>(field))
+			{
+				type = "Struct";
+				color = { 225, 191, 255 };
+			}
+			else if (const auto enm = Cast<UEnum>(field))
+			{
+				type = "Enum";
+				
+				if (enm->HasAnyEnumFlags(EEnumFlags::Flags))
+				{
+					attrs.Emplace("Flags");
+				}
+				
+				color = { 210, 199, 255 };
 			}
 			else
 			{
@@ -165,12 +161,12 @@ namespace ZFieldInspector::ZFieldTreeRow_Private
 						}
 					}
 					
-					color = ret ? FColor::Green : FColor::Cyan;
+					color = ret ? FColor { 147, 204, 100 } : FColor { 102, 195, 204 };
 				}
 				else
 				{
 					type = "Local";
-					color = FColor::Silver;
+					color = { 192, 192, 192 };
 				}
 
 				if (const UClass* outer = function->GetOwnerClass())
@@ -190,7 +186,7 @@ namespace ZFieldInspector::ZFieldTreeRow_Private
 					attrs.Emplace("Replicated");
 				}
 				
-				color = FColor { 159, 153, 255 };
+				color = { 102, 195, 204 };
 			}
 
 			name = property->GetName();
@@ -223,7 +219,6 @@ namespace ZFieldInspector::ZFieldTreeRow_Private
 			info.Text = FText::Format(GFormatWithAttr, FText::FromString(name), FText::FromString(type), FText::FromString(FString::JoinBy(attrs, TEXT(" "), [](const FString& attr){ return FString::Printf(TEXT("[%s]"), *attr); })));
 		}
 
-		// FSlateColor(const FColor&) directly reinterpret FColor to FLinearColor, which leads to wrong color, so we cast to FLinearColor manually.
 		info.Color = FLinearColor { color };
 
 		return info;

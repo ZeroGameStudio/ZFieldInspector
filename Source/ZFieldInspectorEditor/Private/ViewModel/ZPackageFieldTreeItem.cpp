@@ -9,26 +9,26 @@ namespace ZFieldInspector::ZPackageFieldTreeItem_Private
 {
 	int32 GetUFieldPriority(const UField* field)
 	{
+		if (field->IsA<UDelegateFunction>())
+		{
+			return 0;
+		}
+		
 		if (const auto cls = Cast<UClass>(field))
 		{
-			return !cls->HasAnyClassFlags(CLASS_Deprecated) ? 1 : MAX_int32;
+			return !cls->HasAnyClassFlags(CLASS_Deprecated) ? (cls->HasAllClassFlags(CLASS_Interface) ? 1 : 2) : MAX_int32;
 		}
 
 		if (field->IsA<UScriptStruct>())
 		{
-			return 2;
+			return 3;
 		}
 
 		if (field->IsA<UEnum>())
 		{
-			return 3;
-		}
-
-		if (field->IsA<UDelegateFunction>())
-		{
 			return 4;
 		}
-
+		
 		return MAX_int32;
 	}
 }
